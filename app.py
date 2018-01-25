@@ -31,36 +31,44 @@ def get_descriptors(img):
 	# Compute descriptors
 	keypoints, des = orb.compute(img, keypoints)
 	
-	#Display
-	fig, ax = plt.subplots()
+	#Display keypoints
+	"""fig, ax = plt.subplots()
 	ax.imshow(skeleton, interpolation='nearest', cmap=plt.cm.gray)
 	ax.plot(coords[:, 1], coords[:, 0], '.b', markersize=3)
 	ax.plot(coords_subpix[:, 1], coords_subpix[:, 0], '+r', markersize=15)
 	ax.axis((0, 350, 350, 0))
-	plt.show()
+	plt.show()"""
 	
-	return des;
+	return (keypoints, des);
 
 
 def main():
 	image_name = sys.argv[1]
 	img1 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
-	des1 = get_descriptors(img1)
+	kp1, des1 = get_descriptors(img1)
 	
 	image_name = sys.argv[2]
 	img2 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
-	des2 = get_descriptors(img2)
+	kp2, des2 = get_descriptors(img2)
 	# Hamming brute-force matching
-	matches = match_descriptors(des1, des2, metric='hamming')
-	i = 0;
-	matching_difference_threshold = 10; # The allowed difference in distance between keypoints
-	matching_threshold = 5; # Amount of matches we want to find
-	for row in matches:
-		print(row)
-		if abs(row[0] - row[1]) <= matching_threshold:
-			i += 1;
+	sk_matches = match_descriptors(des1, des2, metric='hamming')
+	bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+	matches = bf.match(des1,des2)
+	matches = sorted(matches, key = lambda x:x.distance, reverse=True)
 	
-	if i >= matching_threshold:
+	# Draw first matches.
+	img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches, flags=2, outImg=img1)
+	plt.imshow(img3)
+	plt.show()
+	
+	score_threshold = 500;
+	score = 0;
+	
+	for row in sk_matches:
+		score += abs(row[0]-row[1])
+	
+	print(score)
+	if score_threshold > score:
 		print("Fingerprint matches!");
 	else:
 		print("Fingerprint does not match!")
