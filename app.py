@@ -8,9 +8,39 @@ from skimage.morphology import skeletonize, thin
 
 os.chdir("C:\Users\kjankosk\Desktop\python-fingerprint-recognition")
 
+def removedot(invertThin):
+    temp0 = numpy.array(invertThin[:])
+    temp0 = numpy.array(temp0)
+    temp1 = temp0/255
+    temp2 = numpy.array(temp1)
+    temp3 = numpy.array(temp2)
+    
+    enhanced_img = numpy.array(temp0)
+    filter0 = numpy.zeros((10,10))
+    W,H = temp0.shape[:2]
+    filtersize = 6
+    
+    for i in range(W - filtersize):
+        for j in range(H - filtersize):
+            filter0 = temp1[i:i + filtersize,j:j + filtersize]
+
+            flag = 0
+            if sum(filter0[:,0]) == 0:
+                flag +=1
+            if sum(filter0[:,filtersize - 1]) == 0:
+                flag +=1
+            if sum(filter0[0,:]) == 0:
+                flag +=1
+            if sum(filter0[filtersize - 1,:]) == 0:
+                flag +=1
+            if flag > 3:
+                temp2[i:i + filtersize, j:j + filtersize] = numpy.zeros((filtersize, filtersize))
+
+    return temp2
+
 
 def get_descriptors(img):
-	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+ 	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
 	img = clahe.apply(img)
 	img = image_enhance.image_enhance(img)
 	img = numpy.array(img, dtype=numpy.uint8)
@@ -22,7 +52,7 @@ def get_descriptors(img):
 	#Thinning
 	skeleton = skeletonize(img)
 	skeleton = numpy.array(skeleton, dtype=numpy.uint8)
-
+	skeleton = removedot(skeleton)
 	# Harris corners
 	harris_corners = cv2.cornerHarris(img, 3, 3, 0.04)
 	harris_normalized = cv2.normalize(harris_corners, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32FC1)
@@ -58,10 +88,9 @@ def main():
 	f, axarr = plt.subplots(1,2)
 	axarr[0].imshow(img4)
 	axarr[1].imshow(img5)
-	axarr.set_title("Keypoints")
 	plt.show()
 	# Plot matches
-	img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:15], flags=2, outImg=None)
+	img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches, flags=2, outImg=None)
 	plt.imshow(img3)
 	plt.show()
 	
@@ -71,9 +100,9 @@ def main():
 		score += match.distance
 	score_threshold = 33
 	if score/len(matches) < score_threshold:
-		print("Fingerprint matches")
+		print("Fingerprint matches.")
 	else:
-		print("Fingerprint does not match")
+		print("Fingerprint does not match.")
 	
 	
 	
