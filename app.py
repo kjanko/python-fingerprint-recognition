@@ -3,42 +3,40 @@ import os
 import sys
 import numpy
 import matplotlib.pyplot as plt
+from enhance import image_enhance
+from skimage.morphology import skeletonize, thin
 
-from skimage.feature import corner_harris, corner_subpix, corner_peaks, match_descriptors
-from skimage.morphology import skeletonize
-from skimage.util import invert
+os.chdir("C:\Users\kjankosk\Desktop\python-fingerprint-recognition")
 
-os.chdir("C:\Users\kjanko\Desktop\Fingerprint Recognition")
 
 def get_descriptors(img):
-	# Invert
-	img = invert(img)
+	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+	img = clahe.apply(img)
+	img = image_enhance.image_enhance(img)
+	img = numpy.array(img, dtype=numpy.uint8)
 	# Threshold
-	ret, img = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU);
+	ret, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU);
 	# Normalize to 0 and 1 range
 	img[img == 255] = 1
-	# Thinning
+	
+	#Thinning
 	skeleton = skeletonize(img)
-	# Harris corners detection
-	coords = corner_peaks(corner_harris(skeleton), min_distance=5)
-	# Select corners
-	coords_subpix = corner_subpix(skeleton, coords, window_size=13)
+	skeleton = numpy.array(skeleton, dtype=numpy.uint8)
+
+	# Harris corners
+	harris_corners = cv2.cornerHarris(img, 3, 3, 0.04)
+	harris_normalized = cv2.normalize(harris_corners, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32FC1)
+	threshold_harris = 125;
+	# Extract keypoints
+	keypoints = []
+	for x in range(0, harris_normalized.shape[0]):
+		for y in range(0, harris_normalized.shape[1]):
+			if harris_normalized[x][y] > threshold_harris:
+				keypoints.append(cv2.KeyPoint(y, x, 1))
 	# Define descriptor
 	orb = cv2.ORB_create()
-	keypoints = []
-	for row in coords_subpix:
-		keypoints.append(cv2.KeyPoint(x=row[0], y=row[1], _size=1))
 	# Compute descriptors
-	keypoints, des = orb.compute(img, keypoints)
-	
-	#Display keypoints
-	"""fig, ax = plt.subplots()
-	ax.imshow(skeleton, interpolation='nearest', cmap=plt.cm.gray)
-	ax.plot(coords[:, 1], coords[:, 0], '.b', markersize=3)
-	ax.plot(coords_subpix[:, 1], coords_subpix[:, 0], '+r', markersize=15)
-	ax.axis((0, 350, 350, 0))
-	plt.show()"""
-	
+	_, des = orb.compute(img, keypoints)
 	return (keypoints, des);
 
 
@@ -50,29 +48,35 @@ def main():
 	image_name = sys.argv[2]
 	img2 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
 	kp2, des2 = get_descriptors(img2)
-	# Hamming brute-force matching
-	sk_matches = match_descriptors(des1, des2, metric='hamming')
-	bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-	matches = bf.match(des1,des2)
-	matches = sorted(matches, key = lambda x:x.distance, reverse=True)
 	
-	# Draw first matches.
-	img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches, flags=2, outImg=img1)
+	# Matching between descriptors
+	bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+	matches = sorted(bf.match(des1, des2), key= lambda match:match.distance)
+	# Plot keypoints
+	img4 = cv2.drawKeypoints(img1, kp1, outImage=None)
+	img5 = cv2.drawKeypoints(img2, kp2, outImage=None)
+	f, axarr = plt.subplots(1,2)
+	axarr[0].imshow(img4)
+	axarr[1].imshow(img5)
+	axarr.set_title("Keypoints")
+	plt.show()
+	# Plot matches
+	img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:15], flags=2, outImg=None)
 	plt.imshow(img3)
 	plt.show()
 	
-	score_threshold = 500;
+	# Calculate score
 	score = 0;
-	
-	for row in sk_matches:
-		score += abs(row[0]-row[1])
-	
-	print(score)
-	if score_threshold > score:
-		print("Fingerprint matches!");
+	for match in matches:
+		score += match.distance
+	score_threshold = 33
+	if score/len(matches) < score_threshold:
+		print("Fingerprint matches")
 	else:
-		print("Fingerprint does not match!")
- 
+		print("Fingerprint does not match")
+	
+	
+	
 if __name__ == "__main__":
 	try:
 		main()
