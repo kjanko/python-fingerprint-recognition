@@ -60,7 +60,7 @@ Created on Tue Apr 19 12:14:49 2016
 import numpy as np
 #import math
 #import scipy.ndimage
-from frequest import frequest
+from .frequest import frequest
 
 def ridge_freq(im, mask, orient, blksze, windsze,minWaveLength, maxWaveLength):
     rows,cols = im.shape;

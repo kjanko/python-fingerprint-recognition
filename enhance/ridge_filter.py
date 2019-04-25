@@ -85,9 +85,9 @@ def ridge_filter(im, orient, freq, kx, ky):
     
     filt_rows, filt_cols = reffilter.shape;    
     
-    gabor_filter = np.array(np.zeros((180/angleInc,filt_rows,filt_cols)));
+    gabor_filter = np.array(np.zeros((int(180/angleInc),int(filt_rows),int(filt_cols))));
     
-    for o in range(0,180/angleInc):
+    for o in range(0,int(180/angleInc)):
         
         # Generate rotated versions of the filter.  Note orientation
         # image provides orientation *along* the ridges, hence +90
