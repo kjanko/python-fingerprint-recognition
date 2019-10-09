@@ -27,4 +27,6 @@ docker build -t <name_of_your_choice> .
 docker run -it <name_of_your_choice> <fingerprint_1> <fingerprint_2>
 ```
 
+If you don't have Docker Engine installed, you can get the instructions to install it here: [Install Docker](https://docs.docker.com/v17.09/engine/installation/)
+
 NOTE: the fingerprints must be in the `/database` folder
