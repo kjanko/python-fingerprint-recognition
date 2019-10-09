@@ -18,4 +18,4 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Run app.py when the container launches
 # ENTRYPOINT python /app/app.py 101_1.tif 102_1.tif
-ENTRYPOINT python /app/app.py 101_1.tif 101_2.tif
+ENTRYPOINT ["/app/run.sh"]
