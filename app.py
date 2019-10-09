@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from enhance import image_enhance
 from skimage.morphology import skeletonize, thin
 
-os.chdir("/Users/sashwatk/Documents/projects/git-repos/python-fingerprint-recognition")
+os.chdir("/app/")
 
 def removedot(invertThin):
     temp0 = numpy.array(invertThin[:])
@@ -14,12 +14,12 @@ def removedot(invertThin):
     temp1 = temp0/255
     temp2 = numpy.array(temp1)
     temp3 = numpy.array(temp2)
-    
+
     enhanced_img = numpy.array(temp0)
     filter0 = numpy.zeros((10,10))
     W,H = temp0.shape[:2]
     filtersize = 6
-    
+
     for i in range(W - filtersize):
         for j in range(H - filtersize):
             filter0 = temp1[i:i + filtersize,j:j + filtersize]
@@ -48,7 +48,7 @@ def get_descriptors(img):
 	ret, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
 	# Normalize to 0 and 1 range
 	img[img == 255] = 1
-	
+
 	#Thinning
 	skeleton = skeletonize(img)
 	skeleton = numpy.array(skeleton, dtype=numpy.uint8)
@@ -74,11 +74,11 @@ def main():
 	image_name = sys.argv[1]
 	img1 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
 	kp1, des1 = get_descriptors(img1)
-	
+
 	image_name = sys.argv[2]
 	img2 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
 	kp2, des2 = get_descriptors(img2)
-	
+
 	# Matching between descriptors
 	bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 	matches = sorted(bf.match(des1, des2), key= lambda match:match.distance)
@@ -93,7 +93,7 @@ def main():
 	img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches, flags=2, outImg=None)
 	plt.imshow(img3)
 	plt.show()
-	
+
 	# Calculate score
 	score = 0;
 	for match in matches:
@@ -103,9 +103,9 @@ def main():
 		print("Fingerprint matches.")
 	else:
 		print("Fingerprint does not match.")
-	
-	
-	
+
+
+
 if __name__ == "__main__":
 	try:
 		main()
