@@ -31,4 +31,6 @@ If you don't have Docker Engine installed, you can get the instructions to insta
 
 NOTE: the fingerprints must be in the `/database` folder
 
-# Special thanks to https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python for providing a library used to enhance the fingerprint picture.
+## Credits
+
+Special thanks to https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python for providing a library used to enhance the fingerprint picture.
