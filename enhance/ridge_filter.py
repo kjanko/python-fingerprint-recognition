@@ -79,7 +79,7 @@ def ridge_filter(im, orient, freq, kx, ky):
     
     sze = np.round(3*np.max([sigmax,sigmay]));
     
-    x,y = np.meshgrid(np.linspace(-sze,sze,(2*sze + 1)),np.linspace(-sze,sze,(2*sze + 1)));
+    x,y = np.meshgrid(np.linspace(-sze,sze,(int)(2*sze + 1)),np.linspace(-sze,sze,(int)(2*sze + 1)));
     
     reffilter = np.exp(-(( (np.power(x,2))/(sigmax*sigmax) + (np.power(y,2))/(sigmay*sigmay)))) * np.cos(2*np.pi*unfreq[0]*x); # this is the original gabor filter
     

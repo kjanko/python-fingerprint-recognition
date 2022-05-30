@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 from enhance import image_enhance
 from skimage.morphology import skeletonize, thin
 
-os.chdir("/app/")
-
 def removedot(invertThin):
     temp0 = numpy.array(invertThin[:])
     temp0 = numpy.array(temp0)
@@ -72,11 +70,11 @@ def get_descriptors(img):
 
 def main():
 	image_name = sys.argv[1]
-	img1 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
+	img1 = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
 	kp1, des1 = get_descriptors(img1)
 
 	image_name = sys.argv[2]
-	img2 = cv2.imread("database/" + image_name, cv2.IMREAD_GRAYSCALE)
+	img2 = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
 	kp2, des2 = get_descriptors(img2)
 
 	# Matching between descriptors
