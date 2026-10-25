@@ -1,6 +1,6 @@
 # Python Fingerprint Recognition
 
-[![PyPI](https://img.shields.io/pypi/v/fingerprint-recognition)](https://pypi.org/project/fingerprint-recognition/)
+[![PyPI](https://img.shields.io/pypi/v/fingerprint-recognition?label=PyPI)](https://pypi.org/project/fingerprint-recognition/)
 [![CI](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml/badge.svg)](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml)
 
 Compare two fingerprint images using minutiae: the ridge endings and
