@@ -37,7 +37,7 @@ doesn't change the verdict.
 
 ## Installation
 
-Requires Python 3.10 or newer.
+Requires Python 3.11 or newer.
 
 ```bash
 pip install fingerprint-recognition

@@ -1,11 +1,11 @@
 [project]
 name = "fingerprint-recognition"
-version = "2.0.1"
+version = "2.1.0"
 description = "Minutiae-based fingerprint recognition with Gabor enhancement and ORB alignment"
 readme = "README.md"
 license = "MIT AND BSD-2-Clause"
 license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Kristijan Jankoski" }]
 keywords = ["fingerprint", "biometrics", "minutiae", "opencv", "computer-vision"]
 classifiers = [
@@ -16,7 +16,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -58,7 +57,7 @@ exclude = ["/docs", "/.github", "/Dockerfile", "/.dockerignore", "/.python-versi
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
