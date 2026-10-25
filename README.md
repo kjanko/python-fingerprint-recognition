@@ -1,12 +1,13 @@
 # Python Fingerprint Recognition
 
+[![PyPI](https://img.shields.io/pypi/v/fingerprint-recognition)](https://pypi.org/project/fingerprint-recognition/)
 [![CI](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml/badge.svg)](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml)
 
 Compare two fingerprint images using minutiae: the ridge endings and
 bifurcations that make each print unique. Built on NumPy, SciPy,
 scikit-image and OpenCV.
 
-![Two prints of the same finger, with the matches used to align them](docs/matches.png)
+![Two prints of the same finger, with the matches used to align them](https://raw.githubusercontent.com/kjanko/python-fingerprint-recognition/master/docs/matches.png)
 
 ## How it works
 
@@ -39,11 +40,11 @@ doesn't change the verdict.
 Requires Python 3.10 or newer.
 
 ```bash
-pip install git+https://github.com/kjanko/python-fingerprint-recognition
+pip install fingerprint-recognition
 ```
 
-For the interactive `--show` window, also install matplotlib (or the `plot`
-extra).
+For the interactive `--show` window, install the `plot` extra:
+`pip install "fingerprint-recognition[plot]"`.
 
 ## Command line
 
@@ -116,4 +117,9 @@ The enhancement step is based on
 [Utkarsh Deshmukh's Fingerprint-Enhancement-Python](https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python),
 itself a port of Peter Kovesi's MATLAB code.
 
-A write-up of the original version in Macedonian is in [`docs/`](docs/).
+A write-up of the original version in Macedonian is in [`docs/`](https://github.com/kjanko/python-fingerprint-recognition/tree/master/docs).
+
+## License
+
+[MIT](https://github.com/kjanko/python-fingerprint-recognition/blob/master/LICENSE). The enhancement code keeps the notices of the works it is
+derived from; see [THIRD_PARTY_NOTICES.md](https://github.com/kjanko/python-fingerprint-recognition/blob/master/THIRD_PARTY_NOTICES.md).

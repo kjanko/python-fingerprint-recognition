@@ -1,13 +1,26 @@
 [project]
 name = "fingerprint-recognition"
-version = "2.0.0"
+version = "2.0.1"
 description = "Minutiae-based fingerprint recognition with Gabor enhancement and ORB alignment"
 readme = "README.md"
+license = "MIT AND BSD-2-Clause"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
 requires-python = ">=3.10"
 authors = [{ name = "Kristijan Jankoski" }]
 keywords = ["fingerprint", "biometrics", "minutiae", "opencv", "computer-vision"]
 classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Image Recognition",
     "Typing :: Typed",
 ]
@@ -26,6 +39,8 @@ fingerprint-recognition = "fingerprint_recognition.cli:main"
 
 [project.urls]
 Repository = "https://github.com/kjanko/python-fingerprint-recognition"
+Issues = "https://github.com/kjanko/python-fingerprint-recognition/issues"
+Changelog = "https://github.com/kjanko/python-fingerprint-recognition/releases"
 
 [dependency-groups]
 dev = [
@@ -35,8 +50,11 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/docs", "/.github", "/Dockerfile", "/.dockerignore", "/.python-version"]
 
 [tool.ruff]
 line-length = 100

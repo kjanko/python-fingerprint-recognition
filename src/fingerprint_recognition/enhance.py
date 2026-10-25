@@ -3,7 +3,7 @@
 Port of Peter Kovesi's MATLAB fingerprint enhancement code, by way of
 Utkarsh Deshmukh's Python translation
 (https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python),
-vectorised with NumPy/OpenCV.
+vectorised with NumPy/OpenCV. See THIRD_PARTY_NOTICES.md for their licenses.
 
 Reference: Hong, L., Wan, Y., and Jain, A. K. Fingerprint image enhancement:
 algorithm and performance evaluation. IEEE Transactions on Pattern Analysis
