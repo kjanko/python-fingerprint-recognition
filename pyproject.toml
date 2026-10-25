@@ -1,0 +1,55 @@
+[project]
+name = "fingerprint-recognition"
+version = "2.0.0"
+description = "Minutiae-based fingerprint recognition with Gabor enhancement and ORB alignment"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Kristijan Jankoski" }]
+keywords = ["fingerprint", "biometrics", "minutiae", "opencv", "computer-vision"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.26",
+    "opencv-python-headless>=4.8",
+    "scikit-image>=0.22",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.8"]
+
+[project.scripts]
+fingerprint-recognition = "fingerprint_recognition.cli:main"
+
+[project.urls]
+Repository = "https://github.com/kjanko/python-fingerprint-recognition"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+untyped_calls_exclude = ["skimage"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]

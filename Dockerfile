@@ -1,21 +1,12 @@
-FROM python:3.7-slim
+FROM python:3.13-slim
 
-# Set the working directory to /app
+COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /usr/local/bin/uv
+
 WORKDIR /app
+COPY pyproject.toml uv.lock README.md ./
+COPY src ./src
+RUN uv pip install --system --no-cache .
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-# Install the basic packages to run opencv
-RUN apt-get update && apt-get install -y \
-	libglib2.0-0 \
-	libsm6 \
-	libxext6 \
-	libxrender-dev
-
-# Install any needed packages specified in requirements.txt
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
-
-# Run app.py when the container launches
-# ENTRYPOINT python /app/app.py 101_1.tif 102_1.tif
-ENTRYPOINT ["/app/run.sh"]
+WORKDIR /data
+ENTRYPOINT ["fingerprint-recognition"]
+CMD ["--help"]

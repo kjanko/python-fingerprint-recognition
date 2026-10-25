@@ -1,36 +1,119 @@
 # Python Fingerprint Recognition
 
-Fingerprint recognition with SKimage and OpenCV
+[![CI](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml/badge.svg)](https://github.com/kjanko/python-fingerprint-recognition/actions/workflows/ci.yml)
 
-Requirements:
-- NumPy
-- SKimage
-- OpenCV2
+Compare two fingerprint images using minutiae: the ridge endings and
+bifurcations that make each print unique. Built on NumPy, SciPy,
+scikit-image and OpenCV.
 
+![Two prints of the same finger, with the matches used to align them](docs/matches.png)
 
-Works by extracting minutiae points using harris corner detection.
+## How it works
 
-Uses SIFT (ORB) go get formal descriptors around the keypoints with brute-force hamming distance and then analyzes the returned matches using thresholds.
+1. **Contrast**: CLAHE evens out the brightness of the scan.
+2. **Enhancement**: the image is normalised and segmented, local ridge
+   orientation and frequency are estimated, and a bank of oriented Gabor
+   filters turns it into a clean binary ridge map
+   ([Hong, Wan & Jain, 1998](https://doi.org/10.1109/34.709565)).
+3. **Minutiae**: the ridge map is thinned to one-pixel-wide lines, and the
+   crossing number of each pixel marks ridge endings and bifurcations.
+   Minutiae at the edge of the print, or crowded together (spurs and broken
+   ridges), are discarded.
+4. **Alignment**: each minutia gets an ORB descriptor rotated to the local
+   ridge direction. Descriptor matches propose correspondences, and the
+   rotation, translation and scale that most of them agree on aligns the
+   two prints. Every candidate transform is tried, so results are
+   deterministic.
+5. **Scoring**: after alignment, minutiae that sit within 10 px of each other
+   with ridge directions within 20° are paired one-to-one. The score is the
+   number of pairs; 12 or more is a match (the classic "12-point" rule). The
+   score is computed both ways and the lower one is kept, so the order of the
+   prints doesn't matter.
 
-Usage:
+On the sample images, the two same-finger pairs score 25 and 40 and the four
+different-finger pairs score 3 or less. Rotating a print by any angle
+doesn't change the verdict.
 
-1. Place 2 fingerprint images that you want to compare inside the database folder
-2. Pass the names of the images as arguments in the console
+## Installation
 
-## Dockerfile
+Requires Python 3.10 or newer.
 
-If you don't want to install the libraries, or want a easier way to test the application you can follow the commands:
-
-```shell
-docker build -t <name_of_your_choice> .
-
-docker run -it <name_of_your_choice> <fingerprint_1> <fingerprint_2>
+```bash
+pip install git+https://github.com/kjanko/python-fingerprint-recognition
 ```
 
-If you don't have Docker Engine installed, you can get the instructions to install it here: [Install Docker](https://docs.docker.com/v17.09/engine/installation/)
+For the interactive `--show` window, also install matplotlib (or the `plot`
+extra).
 
-NOTE: the fingerprints must be in the `/database` folder
+## Command line
+
+```bash
+fingerprint-recognition database/101_1.tif database/101_2.tif
+```
+
+```text
+Fingerprint matches. (25 paired minutiae, threshold 12)
+```
+
+| Option | Description |
+| --- | --- |
+| `-t`, `--threshold` | Paired minutiae needed for a match (default 12) |
+| `--json` | Print the score, minutiae counts and verdict as JSON |
+| `--save PATH` | Write an image of the matches used to align the prints |
+| `--show` | Display the keypoints and matches (needs matplotlib) |
+
+The exit code is `0` on a match, `1` when the prints don't match and `2` if an
+image can't be read, so it can be used in scripts.
+
+## Python API
+
+```python
+from fingerprint_recognition import compare
+
+result = compare("database/101_1.tif", "database/101_2.tif")
+print(result.score, result.is_match)
+print(result.transform)  # 2x3 matrix mapping the first print onto the second
+```
+
+`compare` also accepts grayscale NumPy arrays. The steps are available on
+their own too: `enhance` returns the ridge map, `extract_minutiae` the
+minutiae, and `extract_features` / `match_features` let you extract features
+once and compare them many times.
+
+## Docker
+
+```bash
+docker build -t fingerprint-recognition .
+docker run --rm -v "$PWD/database:/data" fingerprint-recognition 101_1.tif 101_2.tif
+```
+
+Paths are relative to `/data` in the container, so mount the folder that holds
+your images there.
+
+## Development
+
+The project uses [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv run pytest          # tests
+uv run ruff check .    # lint
+uv run ruff format .   # format
+uv run mypy src        # type check
+```
+
+## Limitations
+
+This is a compact, readable pipeline for learning and experimenting, not a
+certified biometric system. It has only been checked on the four sample
+images (from FVC2002) and rotated copies of them. Before relying on the
+default threshold, measure false-accept and false-reject rates on a larger
+dataset such as the full FVC2002 databases. Don't use it for anything
+security-sensitive.
 
 ## Credits
 
-Special thanks to https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python for providing a library used to enhance the fingerprint picture.
+The enhancement step is based on
+[Utkarsh Deshmukh's Fingerprint-Enhancement-Python](https://github.com/Utkarsh-Deshmukh/Fingerprint-Enhancement-Python),
+itself a port of Peter Kovesi's MATLAB code.
+
+A write-up of the original version in Macedonian is in [`docs/`](docs/).
